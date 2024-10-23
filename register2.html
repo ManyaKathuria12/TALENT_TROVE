@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('backg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .box {
+            display: flex; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+            padding: 20px;
+            border-radius: 20px;  
+            position: relative;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 5px solid white;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-left: 30px;
+            color: #00bfff;
+        }
+
+        .title::before,
+        .title::after {
+            content: "";
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background-color: #00bfff;
+        }
+
+        .title::before {
+            left: 0px;
+        }
+
+        .title::after {
+            left: calc(100% - 18px);
+            animation: pulse 1s linear infinite;
+        }
+
+        .message, 
+        .signin {
+            font-size: 14.5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .signin {
+            text-align: center;
+        }
+
+        .signin a:hover {
+            text-decoration: underline royalblue;
+        }
+
+        .signin a {
+            color: #00bfff;
+        }
+
+        .flex {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .form label {
+            position: relative;
+            display: block;
+            flex: 1;
+        }
+
+        .form label .input {
+            background-color: #333;
+            color: #fff;
+            width: 95%;
+            padding: 10px;
+            outline: 0;
+            border: 1px solid rgba(105, 105, 105, 0.397);
+            border-radius: 10px;    
+        }
+
+        .form label .input + span {
+            color: rgba(255, 255, 255, 0.5);
+            position: absolute;
+            left: 10px;
+            top: 0px;
+            font-size: 0.9em;
+            cursor: text;
+            transition: 0.3s ease;
+        }
+
+        .form label .input:placeholder-shown + span {
+            top: 12.5px;
+            font-size: 0.9em;
+        }
+
+        .form label .input:focus + span,
+        .form label .input:valid + span {
+            color: #00bfff;
+            top: 0px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .submit {
+            border: none;
+            outline: none;
+            padding: 10px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transform: .3s ease;
+            background-color: #0073b1;
+        }
+
+        .submit:hover {
+            background-color: #00bfff96;
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(0.9);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <form class="form" id="register-form">
+            <p class="title">Register</p>
+            <p class="message">Signup now and get full access to our app.</p>
+            <div class="flex">
+                <label> 
+                    <input class="input" id="firstname" type="text" placeholder="" required="">
+                    <span>Firstname</span>
+                </label>
+                <label>
+                    <input class="input" id="lastname" type="text" placeholder="" required="">
+                    <span>Lastname</span>
+                </label>
+            </div>
+            <label>
+                <input class="input" id="email" type="email" placeholder="" required="">
+                <span>Email</span>
+            </label> 
+            <label>
+                <input class="input" id="password" type="password" placeholder="" required="">
+                <span>Password</span>
+            </label>
+            <label>
+                <input class="input" id="confirm-password" type="password" placeholder="" required="">
+                <span>Confirm password</span>
+            </label>
+            <button type="submit" class="submit">Submit</button>
+            <p class="signin">Already have an account? <a href="login2.html">Sign in</a></p>
+        </form>
+    </div>
+    <script>
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        document.getElementById('register-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const firstname = document.getElementById('firstname').value;
+            const lastname = document.getElementById('lastname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+
+            const username = email; // Assuming you use email as the username
+            if (localStorage.getItem(username)) {
+                alert('Username already exists. Please choose a different one.');
+            } else {
+                const hashedPassword = await hashPassword(password);
+
+                // Store the username and hashed password in localStorage
+                localStorage.setItem(username, hashedPassword);
+                alert('Registration successful! You can now log in.');
+                window.location.href = 'login2.html'; // Redirect to login page
+            }
+        });
+    </script>
+</body>
+</html>
